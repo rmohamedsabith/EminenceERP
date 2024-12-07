@@ -25,10 +25,10 @@ export default function Header() {
   const [navigation,setNavigation] = useState([
     { name: 'Configuration',currentState:false, list:[
       { name: 'Category', href: '/configuration/category' },
-      { name: 'Main Category', href: '#' },
-      { name: 'Branch', href: '#' },
-      { name: 'Brand', href: '#' },
-      { name: 'Supplier', href: '#' },
+      { name: 'Main Category', href: '/configuration/mainCategory' },
+      { name: 'Branch', href: '/configuration/branch' },
+      { name: 'Brand', href: '/configuration/brand' },
+      { name: 'Supplier', href: '/configuration/supplier' },
     ]},
     { name: 'Stock Managment',currentState:false, list:[
       { name: 'Add Item', href: '#' },
@@ -67,6 +67,8 @@ export default function Header() {
       { name: 'Sign out', href: '#' },
     ] },
   ])
+  const [currentHeader,setCurrentHeader] = useState("Dashboard");
+
   const handleNavClick = (clickedItemName:string) => {
     setNavigation((prev) =>
       prev.map((item) =>
@@ -78,7 +80,8 @@ export default function Header() {
   };
   
   return (
-    <div className="min-h-full">
+    <>
+      <div className="min-h-full">
       {/* Navigation Bar */}
       <Disclosure as="nav" className="bg-gray-800">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
@@ -112,6 +115,7 @@ export default function Header() {
                             <Link
                               href={subItem.href}
                               className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                              onClick={()=>setCurrentHeader(subItem.name)}
                             >
                               {subItem.name}
                             </Link>
@@ -221,5 +225,14 @@ export default function Header() {
         </DisclosurePanel>
       </Disclosure>
     </div>
+      <header className="bg-white shadow">
+      <div className="mx-auto max-w-7xl px-4 py-2 sm:px-6 lg:px-8">
+        <h1 className="text-3xl font-bold tracking-tight text-gray-900">
+          {currentHeader}
+        </h1>
+      </div>
+    </header>
+    </>
+    
   )
 }
