@@ -150,11 +150,7 @@ public class BranchService {
     // Get all Branches
     public ResponseEntity<ApiResponse<List<BranchDTO>>> getAllBranches() {
         List<Branch> branches = branchRepository.findAll();
-        if (branches.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No Branches found")
-            );
-        }
+
         List<BranchDTO> branchDTOs = branchMapper.toDtoList(branches);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "Branches fetched successfully", branchDTOs)

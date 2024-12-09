@@ -6,6 +6,8 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedBy;
+
 import java.util.Date;
 
 @Entity
@@ -27,6 +29,7 @@ public class Branch {
     @Column(name = "isMain")
     private Boolean isMain;
 
+    @CreatedBy
     @Size(max = 45, message = "Creator name must be less than 45 characters")
     @Column(name = "creator", length = 45)
     private String creator;

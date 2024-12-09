@@ -7,9 +7,11 @@ import com.example.emipos.repositories.CategoryRepository;
 import com.example.emipos.mappers.CategoryMapper;
 import com.example.emipos.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,6 +21,8 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
+    @Autowired
+    private AuditorAware<String> auditorAware;
 
     @Autowired
     public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
@@ -31,15 +35,22 @@ public class CategoryService {
         return categoryRepository.existsByName(name);
     }
 
+    @Transactional
     // Create a new Category
     public ResponseEntity<ApiResponse<CategoryDTO>> createCategory(CategoryDTO categoryDTO) {
+        Optional<String> auditor = auditorAware.getCurrentAuditor();
+        System.out.println("Current auditor: " + auditor.orElse("None"));
+
         if (isCategoryNameDuplicate(categoryDTO.getName())) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                     ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Category name already exists")
             );
         }
 
-        Category category = categoryMapper.toEntity(categoryDTO);
+        //Category category = categoryMapper.toEntity(categoryDTO);
+        Category category=new Category();
+        category.setName(categoryDTO.getName());
+        category.setDescription(categoryDTO.getDescription());
         Category savedCategory = categoryRepository.save(category);
         CategoryDTO savedCategoryDTO = categoryMapper.toDto(savedCategory);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -82,11 +93,7 @@ public class CategoryService {
     // Get all Categories
     public ResponseEntity<ApiResponse<List<CategoryDTO>>> getAllCategories() {
         List<Category> categories = categoryRepository.findAll();
-        if (categories.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No categories found")
-            );
-        }
+
         List<CategoryDTO> categoryDTOs = categoryMapper.toDtoList(categories);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "Categories fetched successfully", categoryDTOs)

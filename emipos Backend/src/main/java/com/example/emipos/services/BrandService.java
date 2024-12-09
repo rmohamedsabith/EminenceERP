@@ -98,11 +98,7 @@ public class BrandService {
     // Get all Brands
     public ResponseEntity<ApiResponse<List<BrandDTO>>> getAllBrands() {
         List<Brand> brands = brandRepository.findAll();
-        if (brands.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No Brands found")
-            );
-        }
+
         List<BrandDTO> brandDTOs = brandMapper.toDtoList(brands);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "Brands fetched successfully", brandDTOs)

@@ -97,11 +97,7 @@ public class MainCategoryService {
     // Get all MainCategories
     public ResponseEntity<ApiResponse<List<MainCategoryDTO>>> getAllMainCategories() {
         List<MainCategory> mainCategories = mainCategoryRepository.findAll();
-        if (mainCategories.isEmpty()) {
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
-                    ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No MainCategories found")
-            );
-        }
+
         List<MainCategoryDTO> mainCategoryDTOs = mainCategoryMapper.toDtoList(mainCategories);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "MainCategories fetched successfully", mainCategoryDTOs)

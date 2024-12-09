@@ -12,8 +12,6 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class CategoryDTO {
-
-    private int primaryKey;
     private String name;
     private String description;
     private Date createdDate;

@@ -6,8 +6,10 @@ import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.NoArgsConstructor;
-import java.util.Date;
+import org.springframework.data.annotation.CreatedBy;
+import org.springframework.data.annotation.CreatedDate;
 
+import java.util.Date;
 @Entity
 @Getter
 @Setter
@@ -24,28 +26,20 @@ public class Category {
     @Column(name = "description", length = 200)
     private String description;
 
+    @CreatedBy
     @Size(max = 45, message = "Creator name must be less than 45 characters")
     @Column(name = "creator", length = 45)
     private String creator;
 
     @Column(name = "createdDate")
-    @Temporal(TemporalType.TIMESTAMP)
+    @CreatedDate
     private Date createdDate;
 
     @NotNull(message = "Active status cannot be null")
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active = true;
 
-    // Many-to-one relationship with MainCategory
     @ManyToOne
-    @JoinColumn(name = "mainCategoryId", nullable = true)  // nullable = true allows deleting main category
+    @JoinColumn(name = "mainCategoryId", nullable = true)
     private MainCategory mainCategory;
-
-    // Optionally, you can set the createdDate before persisting the entity
-    @PrePersist
-    public void prePersist() {
-        if (createdDate == null) {
-            createdDate = new Date();
-        }
-    }
 }

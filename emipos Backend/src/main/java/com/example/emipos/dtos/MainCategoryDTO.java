@@ -13,7 +13,6 @@ import java.util.Date;
 @AllArgsConstructor
 public class MainCategoryDTO {
 
-    private int primaryKey;
     private String name;
     private String description;
     private Date createdDate;
