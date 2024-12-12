@@ -16,7 +16,7 @@ public class Supplier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Integer primaryKey;
+    private Integer id;
 
     @Column(nullable = false, length = 45)
     private String name;
@@ -73,7 +73,7 @@ public class Supplier {
     @Column(name = "updatedDate")
     private LocalDateTime updatedDate;
 
-    private Boolean active;
+    private Boolean active=true;
 
 
 }

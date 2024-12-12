@@ -2,12 +2,10 @@ package com.example.emipos.services;
 
 import com.example.emipos.dtos.CategoryDTO;
 import com.example.emipos.models.Category;
-import com.example.emipos.models.Category;
 import com.example.emipos.repositories.CategoryRepository;
 import com.example.emipos.mappers.CategoryMapper;
 import com.example.emipos.responses.ApiResponse;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.AuditorAware;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -21,8 +19,7 @@ public class CategoryService {
 
     private final CategoryRepository categoryRepository;
     private final CategoryMapper categoryMapper;
-    @Autowired
-    private AuditorAware<String> auditorAware;
+
 
     @Autowired
     public CategoryService(CategoryRepository categoryRepository, CategoryMapper categoryMapper) {
@@ -38,19 +35,11 @@ public class CategoryService {
     @Transactional
     // Create a new Category
     public ResponseEntity<ApiResponse<CategoryDTO>> createCategory(CategoryDTO categoryDTO) {
-        Optional<String> auditor = auditorAware.getCurrentAuditor();
-        System.out.println("Current auditor: " + auditor.orElse("None"));
+        Category category = categoryMapper.toEntity(categoryDTO);
 
-        if (isCategoryNameDuplicate(categoryDTO.getName())) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
-                    ApiResponse.error(HttpStatus.BAD_REQUEST.value(), "Category name already exists")
-            );
-        }
-
-        //Category category = categoryMapper.toEntity(categoryDTO);
-        Category category=new Category();
-        category.setName(categoryDTO.getName());
-        category.setDescription(categoryDTO.getDescription());
+//        Category category=new Category();
+//        category.setName(categoryDTO.getName());
+//        category.setDescription(categoryDTO.getDescription());
         Category savedCategory = categoryRepository.save(category);
         CategoryDTO savedCategoryDTO = categoryMapper.toDto(savedCategory);
         return ResponseEntity.status(HttpStatus.CREATED).body(
@@ -59,8 +48,8 @@ public class CategoryService {
     }
 
     // Update an existing Category
-    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(String id, CategoryDTO categoryDTO) {
-        Category existingCategory = categoryRepository.findById(id)
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(Integer id, CategoryDTO categoryDTO) {
+        Category existingCategory = categoryRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new RuntimeException("Category not found"));
 
         // Update fields
@@ -77,9 +66,9 @@ public class CategoryService {
     }
 
     // Get a Category by ID
-    public ResponseEntity<ApiResponse<CategoryDTO>> getCategoryById(String id) {
-        Optional<Category> categoryOptional = categoryRepository.findById(id);
-        if (!categoryOptional.isPresent()) {
+    public ResponseEntity<ApiResponse<CategoryDTO>> getCategoryById(Integer id) {
+        Optional<Category> categoryOptional = categoryRepository.findByIdAndActiveTrue(id);
+        if (categoryOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "Category not found")
             );
@@ -92,8 +81,7 @@ public class CategoryService {
 
     // Get all Categories
     public ResponseEntity<ApiResponse<List<CategoryDTO>>> getAllCategories() {
-        List<Category> categories = categoryRepository.findAll();
-
+        List<Category> categories = categoryRepository.findAllByActiveTrue();
         List<CategoryDTO> categoryDTOs = categoryMapper.toDtoList(categories);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "Categories fetched successfully", categoryDTOs)
@@ -116,7 +104,7 @@ public class CategoryService {
 
     // Get list of Category names
     public ResponseEntity<ApiResponse<List<String>>> getCategoryNames() {
-        List<Category> categories = categoryRepository.findAll();
+        List<Category> categories = categoryRepository.findAllByActiveTrue();
         List<String> categoryNames = categories.stream()
                 .map(Category::getName)
                 .toList();
@@ -125,9 +113,9 @@ public class CategoryService {
         );
     }
     // Delete a Category
-    public ResponseEntity<ApiResponse<Void>> deleteCategory(String id) {
-        Optional<Category> categoryOptional = categoryRepository.findById(id);
-        if (!categoryOptional.isPresent()) {
+    public ResponseEntity<ApiResponse<Void>> deleteCategory(Integer id) {
+        Optional<Category> categoryOptional = categoryRepository.findByIdAndActiveTrue(id);
+        if (categoryOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "Category not found")
             );
@@ -136,8 +124,8 @@ public class CategoryService {
 //        categoryRepository.delete(categoryOptional.get());
         categoryOptional.get().setActive(false);
         categoryRepository.save(categoryOptional.get());
-        return ResponseEntity.status(HttpStatus.NO_CONTENT).body(
-                ApiResponse.success(HttpStatus.NO_CONTENT.value(), "Category deleted successfully", null)
+        return ResponseEntity.status(HttpStatus.OK).body(
+                ApiResponse.success(HttpStatus.OK.value(), "Category deleted successfully", null)
         );
     }
 }

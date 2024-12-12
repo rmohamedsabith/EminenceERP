@@ -24,3 +24,4 @@ public interface CategoryMapper {
     // Convert List<CategoryDTO> to List<Category>
     List<Category> toEntityList(List<CategoryDTO> categoryDTOs);
 }
+

@@ -33,7 +33,7 @@ public class BranchService {
     // Ensure only one Branch is marked as 'isMain'
     private void makeAllBranchIsMainFalse() {
         // Get all branches from the repository
-        List<Branch> allBranches = branchRepository.findAll();
+        List<Branch> allBranches = branchRepository.findAllByActiveTrue();
 
         // Mark all branches as 'isMain = false' first
         allBranches.forEach(branch -> {
@@ -74,9 +74,9 @@ public class BranchService {
     }
 
     // Update an existing Branch
-    public ResponseEntity<ApiResponse<BranchDTO>> updateBranch(String name, BranchDTO branchDTO) {
-        // Find the existing branch by name
-        Optional<Branch> existingBranchOptional = branchRepository.findById(name);
+    public ResponseEntity<ApiResponse<BranchDTO>> updateBranch(Integer id, BranchDTO branchDTO) {
+        // Find the existing branch by id
+        Optional<Branch> existingBranchOptional = branchRepository.findByIdAndActiveTrue(id);
         if (existingBranchOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "Branch not found")
@@ -112,8 +112,8 @@ public class BranchService {
 
 
     // Delete a Branch
-    public ResponseEntity<ApiResponse<Void>> deleteBranch(String name) {
-        Optional<Branch> branchOptional = branchRepository.findById(name);
+    public ResponseEntity<ApiResponse<Void>> deleteBranch(Integer id) {
+        Optional<Branch> branchOptional = branchRepository.findByIdAndActiveTrue(id);
         if (branchOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "Branch not found")
@@ -138,8 +138,8 @@ public class BranchService {
     }
 
     // Get a Branch by Name
-    public ResponseEntity<ApiResponse<BranchDTO>> getBranchByName(String name) {
-        Branch branch = branchRepository.findById(name)
+    public ResponseEntity<ApiResponse<BranchDTO>> getBranchById(Integer id) {
+        Branch branch = branchRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new RuntimeException("Branch not found"));
         BranchDTO branchDTO = branchMapper.toDto(branch);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -149,7 +149,7 @@ public class BranchService {
 
     // Get all Branches
     public ResponseEntity<ApiResponse<List<BranchDTO>>> getAllBranches() {
-        List<Branch> branches = branchRepository.findAll();
+        List<Branch> branches = branchRepository.findAllByActiveTrue();
 
         List<BranchDTO> branchDTOs = branchMapper.toDtoList(branches);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -159,7 +159,7 @@ public class BranchService {
 
     // Get all Branch names
     public ResponseEntity<ApiResponse<List<String>>> getListOfBranchNames() {
-        List<Branch> branches = branchRepository.findAll();
+        List<Branch> branches = branchRepository.findAllByActiveTrue();
         List<String> branchNames = branches.stream()
                 .map(Branch::getName)
                 .toList();

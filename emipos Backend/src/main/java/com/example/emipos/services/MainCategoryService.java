@@ -47,9 +47,9 @@ public class MainCategoryService {
     }
 
     // Update an existing MainCategory
-    public ResponseEntity<ApiResponse<MainCategoryDTO>> updateMainCategory(String id, MainCategoryDTO mainCategoryDTO) {
-        Optional<MainCategory> existingMainCategoryOptional = mainCategoryRepository.findById(id);
-        if (!existingMainCategoryOptional.isPresent()) {
+    public ResponseEntity<ApiResponse<MainCategoryDTO>> updateMainCategory(Integer id, MainCategoryDTO mainCategoryDTO) {
+        Optional<MainCategory> existingMainCategoryOptional = mainCategoryRepository.findByIdAndActiveTrue(id);
+        if (existingMainCategoryOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "MainCategory not found")
             );
@@ -68,9 +68,9 @@ public class MainCategoryService {
     }
 
     // Delete a MainCategory
-    public ResponseEntity<ApiResponse<Void>> deleteMainCategory(String id) {
-        Optional<MainCategory> mainCategoryOptional = mainCategoryRepository.findById(id);
-        if (!mainCategoryOptional.isPresent()) {
+    public ResponseEntity<ApiResponse<Void>> deleteMainCategory(Integer id) {
+        Optional<MainCategory> mainCategoryOptional = mainCategoryRepository.findByIdAndActiveTrue(id);
+        if (mainCategoryOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "MainCategory not found")
             );
@@ -85,8 +85,8 @@ public class MainCategoryService {
     }
 
     // Get a MainCategory by Name
-    public ResponseEntity<ApiResponse<MainCategoryDTO>> getMainCategoryByName(String name) {
-        MainCategory mainCategory = mainCategoryRepository.findByName(name)
+    public ResponseEntity<ApiResponse<MainCategoryDTO>> getMainCategoryById(Integer id) {
+        MainCategory mainCategory = mainCategoryRepository.findByIdAndActiveTrue(id)
                 .orElseThrow(() -> new RuntimeException("MainCategory not found"));
         MainCategoryDTO mainCategoryDTO = mainCategoryMapper.toDto(mainCategory);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -96,7 +96,7 @@ public class MainCategoryService {
 
     // Get all MainCategories
     public ResponseEntity<ApiResponse<List<MainCategoryDTO>>> getAllMainCategories() {
-        List<MainCategory> mainCategories = mainCategoryRepository.findAll();
+        List<MainCategory> mainCategories = mainCategoryRepository.findAllByActiveTrue();
 
         List<MainCategoryDTO> mainCategoryDTOs = mainCategoryMapper.toDtoList(mainCategories);
         return ResponseEntity.status(HttpStatus.OK).body(
@@ -120,7 +120,7 @@ public class MainCategoryService {
 
     // Get all MainCategory names
     public ResponseEntity<ApiResponse<List<String>>> getListOfNames() {
-        List<MainCategory> mainCategories = mainCategoryRepository.findAll();
+        List<MainCategory> mainCategories = mainCategoryRepository.findAllByActiveTrue();
         List<String> categoryNames = mainCategories.stream()
                 .map(MainCategory::getName)
                 .toList();

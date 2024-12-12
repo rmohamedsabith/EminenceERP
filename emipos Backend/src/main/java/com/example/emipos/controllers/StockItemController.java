@@ -39,9 +39,9 @@ public class StockItemController {
     }
 
     // Get a StockItem by Name
-    @GetMapping("/name/{name}")
-    public ResponseEntity<ApiResponse<StockItemDTO>> getStockItemByName(@PathVariable String name) {
-        return stockItemService.getStockItemByName(name);
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<StockItemDTO>> getStockItemById(@PathVariable Integer id) {
+        return stockItemService.getStockItemById(id);
     }
 
     // Get all StockItems

@@ -10,9 +10,10 @@ import java.util.Date;
 @Getter
 @Setter
 public class BrandDTO {
+    private Integer id;
     private String name;
     private String description;
     private String creator;
     private Date createdDate;
-    private Boolean active;
+    private Boolean active=true;
 }

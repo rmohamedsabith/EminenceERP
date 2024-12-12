@@ -8,13 +8,16 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface MainCategoryRepository extends JpaRepository<MainCategory, String> {
-
-    // Custom query to find MainCategory by name
-    Optional<MainCategory> findByName(String name);
+public interface MainCategoryRepository extends JpaRepository<MainCategory, Integer> {
 
     // Custom query to get all MainCategories that contain a keyword in the name or description
     List<MainCategory> findByNameContainingIgnoreCase(String nameKeyword);
 
     boolean existsByName(String name);
+
+    List<MainCategory> findAllByActiveTrue();
+
+    Optional<MainCategory> findByIdAndActiveTrue(Integer id);
+
+
 }

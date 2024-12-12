@@ -27,21 +27,21 @@ public class BrandController {
     }
 
     // Update an existing Brand
-    @PutMapping("/{name}")
-    public ResponseEntity<ApiResponse<BrandDTO>> updateBrand(@PathVariable String name, @RequestBody BrandDTO brandDTO) {
-        return brandService.updateBrand(name, brandDTO);
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<BrandDTO>> updateBrand(@PathVariable Integer id, @RequestBody BrandDTO brandDTO) {
+        return brandService.updateBrand(id, brandDTO);
     }
 
     // Delete a Brand
-    @DeleteMapping("/{name}")
-    public ResponseEntity<ApiResponse<Void>> deleteBrand(@PathVariable String name) {
-        return brandService.deleteBrand(name);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteBrand(@PathVariable Integer id) {
+        return brandService.deleteBrand(id);
     }
 
     // Get a Brand by Name
-    @GetMapping("/{name}")
-    public ResponseEntity<ApiResponse<BrandDTO>> getBrandByName(@PathVariable String name) {
-        return brandService.getBrandByName(name);
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BrandDTO>> getBrandById(@PathVariable Integer id) {
+        return brandService.getBrandById(id);
     }
 
     // Get all Brands
@@ -50,13 +50,13 @@ public class BrandController {
         return brandService.getAllBrands();
     }
 
-    // Get Brands by Keyword Search (name contains the keyword)
+    // Get Brands by Keyword Search (id contains the keyword)
     @GetMapping("/search")
     public ResponseEntity<ApiResponse<List<BrandDTO>>> getBrandsByKeyword(@RequestParam String keyword) {
         return brandService.getBrandsByKeyword(keyword);
     }
 
-    // Get all Brand names
+    // Get all Brand ids
     @GetMapping("/names")
     public ResponseEntity<ApiResponse<List<String>>> getListOfBrandNames() {
         return brandService.getListOfBrandNames();

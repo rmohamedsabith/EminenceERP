@@ -6,7 +6,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class SupplierDTO {
-
+    private Integer id;
     private String name;
     private String description;
     private String companyName;
@@ -20,4 +20,5 @@ public class SupplierDTO {
     private String email;
     private String web;
     private String reason;
+    private Boolean active=true;
 }

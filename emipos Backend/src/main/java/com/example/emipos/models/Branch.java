@@ -17,6 +17,9 @@ import java.util.Date;
 public class Branch {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     @NotNull(message = "Name cannot be null")
     @Size(min = 1, max = 45, message = "Name must be between 1 and 45 characters")
     @Column(name = "name", nullable = false, length = 45)
@@ -40,8 +43,7 @@ public class Branch {
 
     @NotNull(message = "Active status cannot be null")
     @Column(name = "active")
-    private Boolean active;
-
+    private Boolean active=true;
     // Automatically sets createdDate before the entity is persisted
     @PrePersist
     public void prePersist() {

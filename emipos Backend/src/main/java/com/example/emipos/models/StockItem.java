@@ -21,8 +21,8 @@ public class StockItem {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "primaryKey")
-    private Integer primaryKey;
+    @Column(name = "id")
+    private Integer id;
 
     @Column(name = "itemcode", nullable = false, length = 45)
     private String itemCode;
@@ -155,7 +155,7 @@ public class StockItem {
     private LocalDateTime updatedDate;
 
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active=true;
 
 
 }

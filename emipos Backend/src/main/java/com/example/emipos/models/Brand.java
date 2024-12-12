@@ -17,6 +17,9 @@ import java.util.Date;
 public class Brand {
 
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Integer id;
+
     @NotNull(message = "Name cannot be null")
     @Size(min = 1, max = 45, message = "Name must be between 1 and 45 characters")
     @Column(name = "name", nullable = false, length = 45)
@@ -37,7 +40,7 @@ public class Brand {
 
     @NotNull(message = "Active status cannot be null")
     @Column(name = "active")
-    private Boolean active;
+    private Boolean active=true;
 
     // Optionally, you can set the createdDate before persisting the entity
     @PrePersist

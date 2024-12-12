@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/maincategories")
+@RequestMapping("/api/main-categories")
 public class MainCategoryController {
 
     private final MainCategoryService mainCategoryService;
@@ -27,16 +27,16 @@ public class MainCategoryController {
     }
 
     // Update an existing MainCategory by ID
-    @PutMapping("/{name}")
-    public ResponseEntity<ApiResponse<MainCategoryDTO>> updateMainCategory(@PathVariable String name, @RequestBody MainCategoryDTO mainCategoryDTO) {
-        return mainCategoryService.updateMainCategory(name, mainCategoryDTO);
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<MainCategoryDTO>> updateMainCategory(@PathVariable Integer id, @RequestBody MainCategoryDTO mainCategoryDTO) {
+        return mainCategoryService.updateMainCategory(id, mainCategoryDTO);
     }
 
 
     // Get a MainCategory by its Name
-    @GetMapping("/{name}")
-    public ResponseEntity<ApiResponse<MainCategoryDTO>> getMainCategoryByName(@PathVariable String name) {
-        return mainCategoryService.getMainCategoryByName(name);
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<MainCategoryDTO>> getMainCategoryByName(@PathVariable Integer id) {
+        return mainCategoryService.getMainCategoryById(id);
     }
 
     // Get all MainCategories
@@ -51,15 +51,15 @@ public class MainCategoryController {
         return mainCategoryService.getMainCategoriesByKeyword(keyword);
     }
 
-    // Get all MainCategory name
-    @GetMapping("/name")
+    // Get all MainCategory id
+    @GetMapping("/id")
     public ResponseEntity<ApiResponse<List<String>>> getListOfNames() {
         return mainCategoryService.getListOfNames();
     }
 
     // Delete a MainCategory by ID
-    @DeleteMapping("/{name}")
-    public ResponseEntity<ApiResponse<Void>> deleteMainCategory(@PathVariable String name) {
-        return mainCategoryService.deleteMainCategory(name);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteMainCategory(@PathVariable Integer id) {
+        return mainCategoryService.deleteMainCategory(id);
     }
 }

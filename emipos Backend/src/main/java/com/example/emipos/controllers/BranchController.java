@@ -27,21 +27,21 @@ public class BranchController {
     }
 
     // Update an existing Branch
-    @PutMapping("/{name}")
-    public ResponseEntity<ApiResponse<BranchDTO>> updateBranch(@PathVariable String name, @RequestBody BranchDTO branchDTO) {
-        return branchService.updateBranch(name, branchDTO);
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<BranchDTO>> updateBranch(@PathVariable Integer id, @RequestBody BranchDTO branchDTO) {
+        return branchService.updateBranch(id, branchDTO);
     }
 
     // Delete a Branch
-    @DeleteMapping("/{name}")
-    public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable String name) {
-        return branchService.deleteBranch(name);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteBranch(@PathVariable Integer id) {
+        return branchService.deleteBranch(id);
     }
 
     // Get a Branch by Name
-    @GetMapping("/{name}")
-    public ResponseEntity<ApiResponse<BranchDTO>> getBranchByName(@PathVariable String name) {
-        return branchService.getBranchByName(name);
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<BranchDTO>> getBranchById(@PathVariable Integer id) {
+        return branchService.getBranchById(id);
     }
 
     // Get all Branches
@@ -50,7 +50,7 @@ public class BranchController {
         return branchService.getAllBranches();
     }
 
-    // Get all Branch names
+    // Get all Branch ids
     @GetMapping("/names")
     public ResponseEntity<ApiResponse<List<String>>> getListOfBranchNames() {
         return branchService.getListOfBranchNames();

@@ -12,11 +12,11 @@ import java.util.Date;
 @NoArgsConstructor
 @AllArgsConstructor
 public class MainCategoryDTO {
-
+    private Integer id;
     private String name;
     private String description;
     private Date createdDate;
     private String creator;
-    private Boolean active;
+    private Boolean active=true;
 
 }

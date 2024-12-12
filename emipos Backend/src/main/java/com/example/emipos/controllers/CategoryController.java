@@ -27,16 +27,16 @@ public class CategoryController {
     }
 
     // Update an existing Category
-    @PutMapping("/{name}")
-    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(@PathVariable("name") String name,
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryDTO>> updateCategory(@PathVariable("id") Integer id,
                                                                    @RequestBody CategoryDTO categoryDTO) {
-        return categoryService.updateCategory(name, categoryDTO);
+        return categoryService.updateCategory(id, categoryDTO);
     }
 
     // Get a Category by ID
-    @GetMapping("/{name}")
-    public ResponseEntity<ApiResponse<CategoryDTO>> getCategoryById(@PathVariable("name") String name) {
-        return categoryService.getCategoryById(name);
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<CategoryDTO>> getCategoryById(@PathVariable("id") Integer id) {
+        return categoryService.getCategoryById(id);
     }
 
     // Get all Categories
@@ -51,14 +51,14 @@ public class CategoryController {
         return categoryService.getCategoriesByKeyword(keyword);
     }
 
-    // Get all category names
+    // Get all category ids
     @GetMapping("/names")
     public ResponseEntity<ApiResponse<List<String>>> getCategoryNames() {
         return categoryService.getCategoryNames();
     }
     // Delete a MainCategory by ID
-    @DeleteMapping("/{name}")
-    public ResponseEntity<ApiResponse<Void>> deleteMainCategory(@PathVariable String name) {
-        return categoryService.deleteCategory(name);
+    @DeleteMapping("/{id}")
+    public ResponseEntity<ApiResponse<Void>> deleteMainCategory(@PathVariable Integer id) {
+        return categoryService.deleteCategory(id);
     }
 }

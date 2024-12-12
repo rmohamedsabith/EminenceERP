@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 
 @Data
 public class StockItemDTO {
+    private Integer id;
     private String itemCode;
     private Integer batch;
     private String itemName;
@@ -45,4 +46,5 @@ public class StockItemDTO {
     private Boolean bonusItem;
     private String bonusItemSellingType;
     private LocalDateTime purchasedDate;
+    private Boolean active=true;
 }

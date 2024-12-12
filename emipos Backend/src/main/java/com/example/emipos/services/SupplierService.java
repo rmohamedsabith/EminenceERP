@@ -38,7 +38,7 @@ public class SupplierService {
 
     // Update an existing Supplier
     public ResponseEntity<ApiResponse<SupplierDTO>> updateSupplier(Integer id, SupplierDTO supplierDTO) {
-        Optional<Supplier> existingSupplierOptional = supplierRepository.findById(id);
+        Optional<Supplier> existingSupplierOptional = supplierRepository.findByIdAndActiveTrue(id);
         if (existingSupplierOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "Supplier not found")
@@ -70,7 +70,7 @@ public class SupplierService {
 
     // Delete a Supplier (soft delete)
     public ResponseEntity<ApiResponse<Void>> deleteSupplier(Integer id) {
-        Optional<Supplier> supplierOptional = supplierRepository.findById(id);
+        Optional<Supplier> supplierOptional = supplierRepository.findByIdAndActiveTrue(id);
         if (supplierOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "Supplier not found")
@@ -87,8 +87,8 @@ public class SupplierService {
     }
 
     // Get a Supplier by Name
-    public ResponseEntity<ApiResponse<SupplierDTO>> getSupplierByName(String name) {
-        Optional<Supplier> supplierOptional = supplierRepository.findByName(name);
+    public ResponseEntity<ApiResponse<SupplierDTO>> getSupplierById(Integer id) {
+        Optional<Supplier> supplierOptional = supplierRepository.findByIdAndActiveTrue(id);
         if (supplierOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "Supplier not found")
@@ -104,7 +104,7 @@ public class SupplierService {
 
     // Get all Suppliers
     public ResponseEntity<ApiResponse<List<SupplierDTO>>> getAllSuppliers() {
-        List<Supplier> suppliers = supplierRepository.findAll();
+        List<Supplier> suppliers = supplierRepository.findAllByActiveTrue();
         List<SupplierDTO> supplierDTOs = supplierMapper.toDtoList(suppliers);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "Suppliers fetched successfully", supplierDTOs)
@@ -126,7 +126,7 @@ public class SupplierService {
 
     // Get all Supplier names
     public ResponseEntity<ApiResponse<List<String>>> getListOfSupplierNames() {
-        List<Supplier> suppliers = supplierRepository.findAll();
+        List<Supplier> suppliers = supplierRepository.findAllByActiveTrue();
         List<String> supplierName = suppliers.stream()
                 .map(Supplier::getName)
                 .toList();

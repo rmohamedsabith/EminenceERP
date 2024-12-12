@@ -39,9 +39,9 @@ public class SupplierController {
     }
 
     // Get a Supplier by Name
-    @GetMapping("/name/{name}")
-    public ResponseEntity<ApiResponse<SupplierDTO>> getSupplierByName(@PathVariable String name) {
-        return supplierService.getSupplierByName(name);
+    @GetMapping("/{id}")
+    public ResponseEntity<ApiResponse<SupplierDTO>> getSupplierById(@PathVariable Integer id) {
+        return supplierService.getSupplierById(id);
     }
 
     // Get all Suppliers

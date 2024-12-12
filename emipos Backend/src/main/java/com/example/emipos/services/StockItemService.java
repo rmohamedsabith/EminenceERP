@@ -37,7 +37,7 @@ public class StockItemService {
 
     // Update an existing StockItem
     public ResponseEntity<ApiResponse<StockItemDTO>> updateStockItem(Integer id, StockItemDTO stockItemDTO) {
-        Optional<StockItem> existingStockItemOptional = stockItemRepository.findById(id);
+        Optional<StockItem> existingStockItemOptional = stockItemRepository.findByIdAndActiveTrue(id);
         if (existingStockItemOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "StockItem not found")
@@ -61,7 +61,7 @@ public class StockItemService {
 
     // Delete a StockItem
     public ResponseEntity<ApiResponse<Void>> deleteStockItem(Integer id) {
-        Optional<StockItem> stockItemOptional = stockItemRepository.findById(id);
+        Optional<StockItem> stockItemOptional = stockItemRepository.findByIdAndActiveTrue(id);
         if (stockItemOptional.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "StockItem not found")
@@ -77,9 +77,9 @@ public class StockItemService {
     }
 
     // Get a StockItem by ID
-    public ResponseEntity<ApiResponse<StockItemDTO>> getStockItemByName(String name) {
-        // Find the StockItem by name
-        Optional<StockItem> stockItemOptional = stockItemRepository.findByItemName(name);
+    public ResponseEntity<ApiResponse<StockItemDTO>> getStockItemById(Integer id) {
+        // Find the StockItem by id
+        Optional<StockItem> stockItemOptional = stockItemRepository.findByIdAndActiveTrue(id);
 
         // Check if StockItem exists
         if (stockItemOptional.isEmpty()) {
@@ -99,7 +99,7 @@ public class StockItemService {
 
     // Get all StockItems
     public ResponseEntity<ApiResponse<List<StockItemDTO>>> getAllStockItems() {
-        List<StockItem> stockItems = stockItemRepository.findAll();
+        List<StockItem> stockItems = stockItemRepository.findAllByActiveTrue();
         List<StockItemDTO> stockItemDTOs = stockItemMapper.toDtoList(stockItems);
         return ResponseEntity.status(HttpStatus.OK).body(
                 ApiResponse.success(HttpStatus.OK.value(), "StockItems fetched successfully", stockItemDTOs)
@@ -122,7 +122,7 @@ public class StockItemService {
 
     // Get all StockItem names
     public ResponseEntity<ApiResponse<List<String>>> getListOfStockItemNames() {
-        List<StockItem> stocks = stockItemRepository.findAll();
+        List<StockItem> stocks = stockItemRepository.findAllByActiveTrue();
         List<String> stockNames = stocks.stream()
                 .map(StockItem::getItemName)
                 .toList();
