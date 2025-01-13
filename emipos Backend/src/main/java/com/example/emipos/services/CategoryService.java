@@ -90,7 +90,7 @@ public class CategoryService {
 
     // Get categories by keyword
     public ResponseEntity<ApiResponse<List<CategoryDTO>>> getCategoriesByKeyword(String keyword) {
-        List<Category> categories = categoryRepository.findByNameContainingIgnoreCase(keyword);
+        List<Category> categories = categoryRepository.findByNameContainingIgnoreCaseAndActiveTrue(keyword);
         if (categories.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No categories found with the given keyword")

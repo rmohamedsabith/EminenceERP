@@ -112,7 +112,7 @@ public class SupplierService {
     }
     // Get Suppliers by Keyword Search (name contains the keyword)
     public ResponseEntity<ApiResponse<List<SupplierDTO>>> getSuppliersByKeyword(String keyword) {
-        List<Supplier> suppliers = supplierRepository.findByNameContainingIgnoreCase(keyword);
+        List<Supplier> suppliers = supplierRepository.findByNameContainingIgnoreCaseAndActiveTrue(keyword);
         if (suppliers.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No Suppliers found with the given keyword")

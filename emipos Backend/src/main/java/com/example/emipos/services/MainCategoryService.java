@@ -106,7 +106,7 @@ public class MainCategoryService {
 
     // Get MainCategories by Keyword Search (name contains the keyword)
     public ResponseEntity<ApiResponse<List<MainCategoryDTO>>> getMainCategoriesByKeyword(String keyword) {
-        List<MainCategory> mainCategories = mainCategoryRepository.findByNameContainingIgnoreCase(keyword);
+        List<MainCategory> mainCategories = mainCategoryRepository.findByNameContainingIgnoreCaseAndActiveTrue(keyword);
         if (mainCategories.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No MainCategories found with the given keyword")

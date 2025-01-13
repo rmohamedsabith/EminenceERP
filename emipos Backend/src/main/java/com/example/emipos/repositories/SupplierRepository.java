@@ -8,11 +8,12 @@ import java.util.Optional;
 
 public interface SupplierRepository extends JpaRepository<Supplier, Integer> {
 
-    List<Supplier> findByNameContainingIgnoreCase(String keyword);
-
     Optional<Supplier> findByName(String name);
 
     List<Supplier> findAllByActiveTrue();
 
     Optional<Supplier> findByIdAndActiveTrue(Integer id);
+
+
+    List<Supplier> findByNameContainingIgnoreCaseAndActiveTrue(String keyword);
 }

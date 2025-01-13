@@ -1,6 +1,7 @@
 package com.example.emipos.repositories;
 
 import com.example.emipos.models.Branch;
+import com.example.emipos.models.Brand;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
@@ -14,4 +15,6 @@ public interface BranchRepository extends JpaRepository<Branch,Integer > {
     List<Branch> findAllByActiveTrue();
 
     Optional<Branch> findByIdAndActiveTrue(Integer id);
+
+    List<Branch> findByNameContainingIgnoreCaseAndActiveTrue(String keyword);
 }

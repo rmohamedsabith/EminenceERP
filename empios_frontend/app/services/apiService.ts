@@ -1,9 +1,5 @@
-// ApiResponse Interface
-export interface ApiResponse<T> {
-  data: T;
-  statusCode: number;
-  message: string;
-}
+import { ApiResponse } from "../interfaces/interfaces";
+
 
 // Generic function for API calls
 const apiCall = async <T>(
@@ -11,10 +7,16 @@ const apiCall = async <T>(
   method: string,
   body?: any
 ): Promise<ApiResponse<T>> => {
+  // Basic Auth credentials
+  const username = "admin";
+  const password = "admin123";
+  const basicAuth = btoa(`${username}:${password}`); // Encode credentials in Base64
+
   const response = await fetch(url, {
     method,
     headers: {
       "Content-Type": "application/json",
+      Authorization: `Basic ${basicAuth}`, // Add Authorization header
     },
     body: body ? JSON.stringify(body) : undefined,
   });
@@ -35,6 +37,7 @@ const apiCall = async <T>(
     message: data.message || "Request was successful",
   };
 };
+
 
 // 1. Create - POST
 export const createData = async (

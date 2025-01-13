@@ -108,7 +108,7 @@ public class StockItemService {
 
     // Get StockItems by Keyword Search (name contains the keyword)
     public ResponseEntity<ApiResponse<List<StockItemDTO>>> getStockItemsByKeyword(String keyword) {
-        List<StockItem> stocks = stockItemRepository.findByItemNameContainingIgnoreCase(keyword);
+        List<StockItem> stocks = stockItemRepository.findByItemNameContainingIgnoreCaseAndActiveTrue(keyword);
         if (stocks.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No StockItems found with the given keyword")

@@ -55,4 +55,10 @@ public class BranchController {
     public ResponseEntity<ApiResponse<List<String>>> getListOfBranchNames() {
         return branchService.getListOfBranchNames();
     }
+
+    // Get Brands by Keyword Search (id contains the keyword)
+    @GetMapping("/search")
+    public ResponseEntity<ApiResponse<List<BranchDTO>>> getBrandsByKeyword(@RequestParam String keyword) {
+        return branchService.getBranchesByKeyword(keyword);
+    }
 }

@@ -6,8 +6,8 @@ export const createCategory = async (category: any) => {
 };
 
 // 2. Update an existing Category (PUT)
-export const updateCategory = async (name: string, category: any) => {
-  return await updateData(`/api/categories/${name}`, category);
+export const updateCategory = async (id: number, category: any) => {
+  return await updateData(`/api/categories/${id}`, category);
 };
 
 // 3. Get a Category by name (GET)

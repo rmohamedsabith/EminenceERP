@@ -1,6 +1,11 @@
 'use client';
+import Modal from '@/app/components/Modal';
 import Search from '@/app/components/Search';
-import { createCategory, getAllCategories } from '@/app/services/configuration/categoryServices';
+import { ApiResponse } from '@/app/interfaces/interfaces';
+import { createCategory, deleteCategory, getAllCategories, getCategoryNames, searchCategories, updateCategory } from '@/app/services/configuration/categoryServices';
+import { getAllMainCategories } from '@/app/services/configuration/mainCategoryServices';
+import dateOnly from '@/app/utils/utils';
+import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
 import React, { ChangeEvent, FormEvent, useEffect, useState } from 'react';
 
@@ -18,6 +23,7 @@ interface PageProps {
 
 // Define the types for form data and errors
 interface FormData {
+  id?:number;
   name: string;
   description: string;
   isMainBranch?: boolean;
@@ -35,19 +41,53 @@ const Page: React.FC<PageProps> = ({ params }) => {
     description: "",
     isMainBranch: false,
   });
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [selectedItemId, setSelectedItemIdItemId] = useState<string | null>(null);
+  const [data, setData] = useState<ApiResponse<any>|undefined>(undefined);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [editingItemId, setEditingItemId] = useState<number | undefined>(undefined);
+  
+
+  // const handleConfirmModal = () => {
+  //   setIsModalOpen(false);
+  // };
+
+  // const handleCancelModal = () => {
+  //   console.log('Cancelled!');
+  //   setIsModalOpen(false);
+  // };
     
 
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // const { data, error, isLoading } = useQuery(
-  //   {
-  //   queryKey: ['categories'],
+  const { data:configDatas, error, isLoading, refetch:refetchConfig } = useQuery(
+  // {
+  //   queryKey: ['categories'], 
   //   queryFn: getAllCategories,
-  //   staleTime: 1000 * 60 * 5, // Cache for 5 minutes
-  //   refetchOnWindowFocus: false, // Don't refetch on window focus
-  //   retry: false, // Disable retrying the request
+  //   staleTime: 1000 * 60 * 5, 
+  //   refetchOnWindowFocus: false, 
+  //   retry: false, 
   // }
-  // );
+
+  {
+    queryKey: ['data', item],
+    queryFn: async () => {
+      if (item === 'category') {
+        return getAllCategories;
+      } else if (item === 'mainCategory') {
+        return getAllMainCategories;
+      }
+      throw new Error('Invalid item'); // Ensure fallback for unexpected cases
+    },
+    enabled: !!item, 
+  }
+ 
+);
+  const { data:nameList,refetch:refetchNameList } = useQuery({
+    queryKey: ['categoriesName'],
+    queryFn: getCategoryNames, 
+  });
+  
 
   // Unwrap the `params` promise using `React.use()`
   useEffect(() => {
@@ -55,6 +95,10 @@ const Page: React.FC<PageProps> = ({ params }) => {
       setItem(item);
     });
   }, [params]);
+
+  useEffect(()=>{
+    setData(configDatas)
+   },[configDatas])
 
   // Handle loading state
   if (!item) {
@@ -74,13 +118,34 @@ const Page: React.FC<PageProps> = ({ params }) => {
     }));
     setErrors((prev) => ({ ...prev, [name]: !value }));
   };
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.name!=="") {
       switch(item)
       {
-        case "category":createCategory(formData)
+        case "category":
+          {
+            try {
+              if (isEditMode && editingItemId) {
+                // Update operation
+                await updateCategory(editingItemId, formData); // Replace with actual update service
+              } else {
+                // Create operation
+                await createCategory(formData);
+              }
+              refetchConfig(); // Refresh data
+              handleCancel(); // Reset form and exit edit mode
+              setIsEditMode(false); 
+            } catch (error) {
+              console.error("Error during form submission:", error);
+            }
+          }
       }
+      setFormData({
+        name: "",
+        description: "",
+        isMainBranch:false,
+      });
     }else{
       setErrors({name:true});
     }
@@ -92,8 +157,34 @@ const Page: React.FC<PageProps> = ({ params }) => {
       description: "",
       isMainBranch:false,
     });
-    setErrors({});
   };
+  const handleDelete = async(id:string) => {
+    await deleteCategory(id)
+    refetchConfig();
+    setIsModalOpen(false)
+    setFormData({
+      name: "",
+      description: "",
+      isMainBranch:false,
+    });
+  };
+  const handleEdit = (item:FormData) => {
+    setIsEditMode(true);
+    setEditingItemId(item.id);
+    setFormData({
+      name: item.name,
+      description: item.description,
+      isMainBranch:item.isMainBranch || false,
+    });
+  };
+  const handleSearch=async(value:string)=>{
+    const result = await searchCategories(value); // Make sure this returns the correct type
+    if (result) {
+      setData(result);
+    } else {
+      console.error("searchCategories returned undefined or null.");
+    }   
+  }
 
   return (
     <div>
@@ -183,7 +274,7 @@ const Page: React.FC<PageProps> = ({ params }) => {
             type="submit"
             className="rounded-md bg-indigo-600 px-3 py-2 text-sm font-semibold text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
           >
-            Save
+            {isEditMode && editingItemId?"Update":"Save"}
           </button>
         </div>
         </form>
@@ -191,7 +282,7 @@ const Page: React.FC<PageProps> = ({ params }) => {
 
       {/* Search and Table */}
       <div className="mx-10 mt-10">
-      <Search options={[]} onSearch={()=>{}}/>
+      <Search options={nameList?.data||[]} onSearch={handleSearch}/>
 
         <div className="relative flex flex-col w-full h-full overflow-y-auto text-gray-700 bg-white shadow-md rounded-lg bg-clip-border">
           <table className="w-full text-left table-auto min-w-max">
@@ -218,28 +309,31 @@ const Page: React.FC<PageProps> = ({ params }) => {
               </tr>
             </thead>
             <tbody>
-            {/* {data?.data?.map((item:any) => (
+            {data?.data?.map((item:any) => (
               <tr className="hover:bg-slate-50 border-b border-slate-200" key={item.id}>
                 <td className="p-4 py-5">
-                  <p className="block font-semibold text-sm text-slate-800">INV-1001</p>
+                  <p className="block font-semibold text-sm text-slate-800">{item.name}</p>
                 </td>
                 <td className="p-4 py-5">
-                  <p className="block text-sm text-slate-800">John Doe</p>
+                  <p className="block text-sm text-slate-800">{item.description}</p>
                 </td>
                 <td className="p-4 py-5">
-                  <p className="block text-sm text-slate-800">$1,200.00</p>
+                  <p className="block text-sm text-slate-800">{item.creator}</p>
                 </td>
                 <td className="p-4 py-5">
-                  <p className="block text-sm text-slate-800">2024-08-01</p>
+                  <p className="block text-sm text-slate-800">{dateOnly(item.createdDate)}</p>
                 </td>
                 <td className="p-4 py-5">
                   <div className="text-center flex gap-10">
-                    <button className="text-slate-600 hover:text-slate-800">
+                    <button className="text-slate-600 hover:text-slate-800" onClick={()=>{
+                      setSelectedItemIdItemId(item.id)
+                      setIsModalOpen(true)
+                      }}>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m14.74 9-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 0 1-2.244 2.077H8.084a2.25 2.25 0 0 1-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 0 0-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 0 1 3.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 0 0-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 0 0-7.5 0" />
                       </svg>
                     </button>
-                    <button className="text-slate-600 hover:text-slate-800">
+                    <button className="text-slate-600 hover:text-slate-800"onClick={()=>handleEdit(item)}>
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="size-6">
                         <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L10.582 16.07a4.5 4.5 0 0 1-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 0 1 1.13-1.897l8.932-8.931Zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0 1 15.75 21H5.25A2.25 2.25 0 0 1 3 18.75V8.25A2.25 2.25 0 0 1 5.25 6H10" />
                       </svg>
@@ -247,13 +341,23 @@ const Page: React.FC<PageProps> = ({ params }) => {
                   </div>
                 </td>
               </tr>
-            ))} */}
+            ))}
 
               
             </tbody>
           </table>
         </div>
       </div>
+      <Modal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)} // Only closes the modal
+        icon={ExclamationTriangleIcon}
+        heading="Confirm Deletion"
+        message="Are you sure you want to delete this item? This action cannot be undone."
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        onConfirm={() => selectedItemId && handleDelete(selectedItemId)} // Handle delete logic
+      />
     </div>
   );
 };

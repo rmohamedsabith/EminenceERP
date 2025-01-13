@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/main-categories")
+@RequestMapping("/api/mainCategories")
 public class MainCategoryController {
 
     private final MainCategoryService mainCategoryService;

@@ -107,7 +107,7 @@ public class BrandService {
 
     // Get Brands by Keyword Search (name contains the keyword)
     public ResponseEntity<ApiResponse<List<BrandDTO>>> getBrandsByKeyword(String keyword) {
-        List<Brand> brands = brandRepository.findByNameContainingIgnoreCase(keyword);
+        List<Brand> brands = brandRepository.findByNameContainingIgnoreCaseAndActiveTrue(keyword);
         if (brands.isEmpty()) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(
                     ApiResponse.error(HttpStatus.NOT_FOUND.value(), "No Brands found with the given keyword")

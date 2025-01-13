@@ -11,11 +11,12 @@ import java.util.Optional;
 public interface StockItemRepository extends JpaRepository<StockItem, Integer> {
 
 
-    List<StockItem> findByItemNameContainingIgnoreCase(String keyword);
-
-    Optional<StockItem> findByItemName(String name);
 
     Optional<StockItem> findByIdAndActiveTrue(Integer id);
 
     List<StockItem> findAllByActiveTrue();
+
+
+
+    List<StockItem> findByItemNameContainingIgnoreCaseAndActiveTrue(String keyword);
 }
