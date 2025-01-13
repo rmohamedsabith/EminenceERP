@@ -2,8 +2,10 @@
 import Modal from '@/app/components/Modal';
 import Search from '@/app/components/Search';
 import { ApiResponse } from '@/app/interfaces/interfaces';
+import { createBranch, getAllBranches, getBranchNames, updateBranch } from '@/app/services/configuration/branchServices';
+import { createBrand, getAllBrands, getBrandNames, updateBrand } from '@/app/services/configuration/brandServices';
 import { createCategory, deleteCategory, getAllCategories, getCategoryNames, searchCategories, updateCategory } from '@/app/services/configuration/categoryServices';
-import { getAllMainCategories } from '@/app/services/configuration/mainCategoryServices';
+import { createMainCategory, getAllMainCategories, getMainCategoryNames, updateMainCategory } from '@/app/services/configuration/mainCategoryServices';
 import dateOnly from '@/app/utils/utils';
 import { ExclamationTriangleIcon } from '@heroicons/react/24/outline';
 import { useQuery } from '@tanstack/react-query';
@@ -73,9 +75,13 @@ const Page: React.FC<PageProps> = ({ params }) => {
     queryKey: ['data', item],
     queryFn: async () => {
       if (item === 'category') {
-        return getAllCategories;
+        return getAllCategories();
       } else if (item === 'mainCategory') {
-        return getAllMainCategories;
+        return getAllMainCategories();
+      } else if (item === 'brand') {
+        return getAllBrands();
+      } else if (item === 'branch') {
+        return getAllBranches();
       }
       throw new Error('Invalid item'); // Ensure fallback for unexpected cases
     },
@@ -83,10 +89,24 @@ const Page: React.FC<PageProps> = ({ params }) => {
   }
  
 );
-  const { data:nameList,refetch:refetchNameList } = useQuery({
-    queryKey: ['categoriesName'],
-    queryFn: getCategoryNames, 
-  });
+  const { data:nameList,refetch:refetchNameList } = useQuery(
+    {
+      queryKey: ['list', item],
+      queryFn: async () => {
+        if (item === 'category') {
+          return getCategoryNames();
+        } else if (item === 'mainCategory') {
+          return getMainCategoryNames();
+        } else if (item === 'brand') {
+          return getBrandNames();
+        } else if (item === 'branch') {
+          return getBranchNames();
+        }
+        throw new Error('Invalid item'); // Ensure fallback for unexpected cases
+      },
+      enabled: !!item, 
+    }
+  );
   
 
   // Unwrap the `params` promise using `React.use()`
@@ -109,6 +129,10 @@ const Page: React.FC<PageProps> = ({ params }) => {
     return item==="branch"
   }
 
+  const callActions=(item:String,)=>{
+
+  }
+
 
   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value, type, checked } = e.target as HTMLInputElement;
@@ -121,25 +145,54 @@ const Page: React.FC<PageProps> = ({ params }) => {
   const handleSubmit = async(e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (formData.name!=="") {
-      switch(item)
-      {
-        case "category":
-          {
-            try {
-              if (isEditMode && editingItemId) {
-                // Update operation
-                await updateCategory(editingItemId, formData); // Replace with actual update service
-              } else {
-                // Create operation
-                await createCategory(formData);
-              }
-              refetchConfig(); // Refresh data
-              handleCancel(); // Reset form and exit edit mode
-              setIsEditMode(false); 
-            } catch (error) {
-              console.error("Error during form submission:", error);
+      
+      try{
+
+        switch(item)
+        {
+          case "category":
+            if (isEditMode && editingItemId) {
+              // Update operation
+              await updateCategory(editingItemId, formData); // Replace with actual update service
+            } else {
+              // Create operation
+              await createCategory(formData);
             }
-          }
+            break;           
+          case "mainCategory":            
+            if (isEditMode && editingItemId) {
+              // Update operation
+              await updateMainCategory(editingItemId, formData); // Replace with actual update service
+            } else {
+              // Create operation
+              await createMainCategory(formData);
+            }
+            break;
+          case "brand":
+            if (isEditMode && editingItemId) {
+              // Update operation
+              await updateBrand(editingItemId, formData); // Replace with actual update service
+            } else {
+              // Create operation
+              await createBrand(formData);
+            }
+            break; 
+          case "branch":
+            if (isEditMode && editingItemId) {
+              // Update operation
+              await updateBranch(editingItemId, formData); // Replace with actual update service
+            } else {
+              // Create operation
+              await createBranch(formData);
+            }
+            break;   
+            
+        }
+        refetchConfig(); // Refresh data
+        handleCancel(); // Reset form and exit edit mode
+        setIsEditMode(false); 
+      } catch (error) {
+        console.error("Error during form submission:", error);
       }
       setFormData({
         name: "",
